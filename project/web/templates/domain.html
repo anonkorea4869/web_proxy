@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도메인 관리</title>
+    <link rel="shortcut icon" href="/static/images/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .status-badge { min-width: 60px; }
+        .action-buttons { white-space: nowrap; }
+        .action-buttons button { margin: 0 2px; }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .nav-link.active {
+            font-weight: 600;
+            color: #0d6efd !important;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .nav-item {
+            margin: 0 1rem;
+        }
+        .nav-link {
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <img src="/static/images/logo.png" alt="로고" height="30" class="d-inline-block align-text-top me-2">
+                Hyperithm Proxy
+            </a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-graph-up"></i> 로그</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="domain.html"><i class="bi bi-globe"></i> 도메인</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cidr.html"><i class="bi bi-diagram-3"></i> CIDR</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="hide.html"><i class="bi bi-eye-slash"></i> 숨김</a>
+                    </li>
+                </ul>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">도메인 관리</h5>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDomainModal">
+                    <i class="bi bi-plus"></i> 새 도메인
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>상태 <i class="bi bi-arrow-down-up"></i></th>
+                                <th>도메인 <i class="bi bi-arrow-down-up"></i></th>
+                                <th>설명 <i class="bi bi-arrow-down-up"></i></th>
+                                <th>업데이트 날짜 <i class="bi bi-arrow-down-up"></i></th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody id="domainTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 도메인 추가 모달 -->
+    <div class="modal fade" id="addDomainModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">새 도메인 추가</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDomainForm" onsubmit="event.preventDefault(); addDomain();">
+                        <div class="mb-3">
+                            <label class="form-label">상태</label>
+                            <select name="list_type" class="form-select" required>
+                                <option value="allow">허용</option>
+                                <option value="deny">차단</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">도메인</label>
+                            <input type="text" name="domain" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">설명</label>
+                            <input type="text" name="description" class="form-control">
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="submit" class="btn btn-primary">추가</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 도메인 수정 모달 -->
+    <div class="modal fade" id="editDomainModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">도메인 수정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDomainForm" onsubmit="event.preventDefault(); updateDomain();">
+                        <input type="hidden" name="idx">
+                        <div class="mb-3">
+                            <label class="form-label">상태</label>
+                            <select name="list_type" class="form-select" required>
+                                <option value="allow">허용</option>
+                                <option value="deny">차단</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">도메인</label>
+                            <input type="text" name="domain" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">설명</label>
+                            <input type="text" name="description" class="form-control">
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="submit" class="btn btn-primary">수정</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/domain.js"></script>
+</body>
+</html>

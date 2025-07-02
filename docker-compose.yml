@@ -1,0 +1,57 @@
+services:
+  proxy:
+    build:
+      context: .
+    command: python /project/proxy/main.py
+    volumes:
+      - ./project:/project
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=anonkorea4869
+      - MYSQL_PASSWORD=anonkorea4869
+      - MYSQL_DATABASE=proxy
+
+  web:
+    build:
+      context: .
+    command: python3 /project/web/main.py
+    working_dir: /project/web
+    volumes:
+      - ./project:/project
+    ports:
+      - "8000:8000"
+    depends_on:
+      - proxy
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=anonkorea4869
+      - MYSQL_PASSWORD=anonkorea4869
+      - MYSQL_DATABASE=proxy
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=proxy
+      - MYSQL_USER=anonkorea4869
+      - MYSQL_PASSWORD=anonkorea4869
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:

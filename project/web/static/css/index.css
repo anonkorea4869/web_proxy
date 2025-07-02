@@ -1,0 +1,46 @@
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card-title {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+#deny-rate {
+    color: #dc3545;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.6em;
+}
+
+.badge-allow {
+    background-color: #a7286e;
+}
+
+.badge-deny {
+    background-color: #dc3545;
+}
